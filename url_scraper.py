@@ -1,6 +1,6 @@
 import re
-import sys
 import urllib.request
+from  urllib.error import HTTPError, URLError
 from collections import Counter
 
 
@@ -14,11 +14,19 @@ def request_to_url(url=None):
                              " AppleWebKit/537.36 (KHTML, like Gecko)"
                              " Chrome/83.0.4103.97 Safari/537.36"}
         )
-        response = urllib.request.urlopen(req)
-        raw_data = response.read().decode('utf-8')
-        return raw_data
+        try:
+            response = urllib.request.urlopen(req)
+            raw_data = response.read().decode('utf-8')
+            return raw_data
+        except HTTPError as e:
+            print('The server couldn\'t fulfill the request.')
+            print('Error code: ', e.code)
+        except URLError as e:
+            print('We failed to reach a server.')
+            print('Reason: ', e.reason)
 
-def extract_html_tags(data):
+
+def extract_html_tags(data=''):
     regex = r'(<\/[a-z]*>)'
     tags_dict = dict()
     result = re.findall(regex, data)
